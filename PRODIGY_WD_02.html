@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casio Stopwatch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: rgba(0, 0, 0, 0.8); /* Black transparent background */
+            color: white;
+        }
+
+        #stopwatch-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1); /* White transparent background for the container */
+            border-radius: 30px;
+            padding: 20px;
+            border: 5px solid red;
+        }
+
+        #time-display {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        #buttons-container {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1em;
+            margin: 5px;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.1); /* White transparent background for buttons */
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+        hr{
+            color:white;
+        }
+    </style>
+</head>
+<body>
+    <div id="stopwatch-container">
+        <hr>
+        <h1>&copyCasio Stopwatch</h1>
+        <hr>
+        <div id="time-display">00:00:00</div>
+        <div id="buttons-container">
+            <button onclick="startStopwatch()">Start</button>
+            <button onclick="pauseStopwatch()">Pause</button>
+            <button onclick="resetStopwatch()">Reset</button>
+            <button onclick="lapTime()">Lap</button>
+        </div>
+        <hr>
+        <ul id="lap-times"></ul>
+    </div>
+    
+
+    <script>
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
+        let laps = [];
+
+        function startStopwatch() {
+            if (!startTime) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateTime, 10);
+            }
+        }
+
+        function pauseStopwatch() {
+            clearInterval(timerInterval);
+            startTime = null;
+        }
+
+        function resetStopwatch() {
+            clearInterval(timerInterval);
+            startTime = null;
+            elapsedTime = 0;
+            updateDisplay();
+            laps = [];
+            updateLapTimes();
+        }
+
+        function lapTime() {
+            if (startTime) {
+                const lap = Date.now() - startTime;
+                laps.push(lap);
+                updateLapTimes();
+            }
+        }
+
+        function updateTime() {
+            elapsedTime = Date.now() - startTime;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const formattedTime = formatTime(elapsedTime);
+            document.getElementById('time-display').textContent = formattedTime;
+        }
+
+        function formatTime(time) {
+            const date = new Date(time);
+            const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+            const seconds = date.getUTCSeconds().toString().padStart(2, '0');
+            const milliseconds = Math.floor(date.getUTCMilliseconds() / 10).toString().padStart(2, '0');
+            return `${minutes}:${seconds}:${milliseconds}`;
+        }
+
+        function updateLapTimes() {
+            const lapTimesContainer = document.getElementById('lap-times');
+            lapTimesContainer.innerHTML = '';
+            laps.forEach((lap, index) => {
+                const lapTimeItem = document.createElement('li');
+                lapTimeItem.textContent = `Lap ${index + 1}: ${formatTime(lap)}`;
+                lapTimesContainer.appendChild(lapTimeItem);
+            });
+        }
+    </script>
+</body>
+</html>
